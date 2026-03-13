@@ -290,15 +290,33 @@ async function buildStripCanvas() {
   ctx.fillStyle = '#fbf4dc';
   ctx.fillRect(0, 0, outW, outH);
 
-  // Photo slots in inches (stacked vertically)
-  const photoW = px(CONFIG.photoInches.w);
-  const photoH = px(CONFIG.photoInches.h);
-  const gap = px(0.18);
-  const totalH = photoH * 4 + gap * 3;
-  const x = Math.round((outW - photoW) / 2);
-  const startY = Math.round((outH - totalH) / 2);
+  // Layout in "design" pixels, then scale to physical strip size.
+  // Design spec (from product requirements):
+  // - Each photo logical size: 500×350
+  // - Vertical spacing between photos: 33
+  // - Header above first photo: 57
+  // - Footer below last photo: 235
+  const DESIGN = {
+    photoW: 500,
+    photoH: 350,
+    gap: 33,
+    header: 57,
+    footer: 235,
+  };
+  const designTotalH = DESIGN.header + DESIGN.photoH * 4 + DESIGN.gap * 3 + DESIGN.footer;
 
+  // Use a uniform scale so proportions match design exactly and
+  // the full height maps into the physical 2×6 strip.
+  const scale = outH / designTotalH;
+
+  const photoW = DESIGN.photoW * scale;
+  const photoH = DESIGN.photoH * scale;
+  const gap = DESIGN.gap * scale;
+  const header = DESIGN.header * scale;
   const radius = Math.max(18, Math.round(photoW * 0.06));
+
+  const x = Math.round((outW - photoW) / 2);
+  const startY = header;
 
   for (let i = 0; i < 4; i += 1) {
     const y = startY + i * (photoH + gap);
