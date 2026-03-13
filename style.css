@@ -298,10 +298,10 @@ body{
   opacity: .75;
 }
 
-/* Print - restrict to 4×6 inch only */
+/* Print - image at top-left (0,0) on letter page only */
 .print-only{ display:none; }
 @page{
-  size: 4in 6in;
+  size: letter;
   margin: 0;
 }
 @media print{
@@ -319,6 +319,9 @@ body{
     overflow: hidden;
   }
   .print-only img{
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 4in;
     height: 6in;
     object-fit: contain;

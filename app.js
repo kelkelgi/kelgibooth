@@ -436,50 +436,55 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([bytes], { type: mime });
 }
 
-function downloadDataUrl(dataUrl, filename) {
-  const a = document.createElement('a');
-  a.href = dataUrl;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+function zipFilename() {
+  const d = new Date();
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const mm = pad2(d.getMonth() + 1);
+  const dd = pad2(d.getDate());
+  const hh = pad2(d.getHours());
+  const mi = pad2(d.getMinutes());
+  const ss = pad2(d.getSeconds());
+  return `photobooth_${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.zip`;
 }
 
 async function saveAllToDevice() {
   if (!shots.length && !compositeDataUrl) return;
+  if (typeof JSZip === 'undefined') return;
 
-  const files = [];
+  const zip = new JSZip();
 
   shots.forEach((dataUrl, idx) => {
     if (!dataUrl) return;
     const blob = dataUrlToBlob(dataUrl);
-    files.push(new File([blob], shotFilename(idx + 1), { type: 'image/jpeg' }));
+    zip.file(shotFilename(idx + 1), blob);
   });
 
   if (compositeDataUrl) {
     const blob = dataUrlToBlob(compositeDataUrl);
-    files.push(new File([blob], timestampFilename(), { type: 'image/png' }));
+    zip.file(timestampFilename(), blob);
   }
+
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  const zipFile = new File([zipBlob], zipFilename(), { type: 'application/zip' });
 
   if (navigator.share) {
     try {
-      await navigator.share({ files });
+      await navigator.share({ files: [zipFile] });
       return;
     } catch (err) {
       if (err.name === 'AbortError') return;
     }
   }
 
-  // Fallback: trigger downloads (saves to Downloads, accessible in Files)
-  for (let i = 0; i < shots.length; i += 1) {
-    if (shots[i]) {
-      downloadDataUrl(shots[i], shotFilename(i + 1));
-      await sleep(300);
-    }
-  }
-  if (compositeDataUrl) {
-    downloadDataUrl(compositeDataUrl, timestampFilename());
-  }
+  const url = URL.createObjectURL(zipBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = zipFilename();
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function resetApp() {
