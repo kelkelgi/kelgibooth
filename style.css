@@ -129,15 +129,15 @@ body{
   position:absolute;
   width: 88px;
   height: 88px;
-  background: url("./assets/clover1-d37c4528-6e5e-44a2-b04e-781008eb5013.png") center/contain no-repeat;
+  background: url("./assets/clover1.png") center/contain no-repeat;
   opacity:0;
   transform: translate(-50%, -50%) scale(.2) rotate(0deg);
   filter: drop-shadow(0 10px 14px rgba(0,0,0,.25));
   will-change: transform, opacity;
 }
-.bloom.b2{ background-image: url("./assets/clover2-4ef8878c-3eb0-4319-ab2c-a3342bc3c8f0.png"); }
-.bloom.b3{ background-image: url("./assets/clover3-1dcf92d6-4d75-48e5-8098-416e18dcef99.png"); }
-.bloom.b4{ background-image: url("./assets/clover4-eb75a830-913d-41bc-879c-277f6cfc2ee5.png"); }
+.bloom.b2{ background-image: url("./assets/clover2.png"); }
+.bloom.b3{ background-image: url("./assets/clover3.png"); }
+.bloom.b4{ background-image: url("./assets/clover4.png"); }
 
 @keyframes bloomOut{
   0%{ opacity:0; transform: translate(-50%,-50%) scale(.15) rotate(-12deg); }
@@ -162,6 +162,18 @@ body{
   padding: var(--padT) var(--padR) var(--padB) var(--pad);
   pointer-events:none;
 }
+.flash{
+  position:absolute;
+  inset:0;
+  background: rgba(255,255,255,.92);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 140ms ease;
+}
+.flash.is-on{
+  opacity: 1;
+  transition: opacity 40ms ease;
+}
 .topbar{
   display:flex;
   justify-content:flex-start;
@@ -184,6 +196,11 @@ body{
   text-shadow:
     0 10px 30px rgba(0,0,0,.55),
     0 2px 0 rgba(0,0,0,.35);
+}
+.countdown.is-ready{
+  font-size: 92px;
+  opacity: .92;
+  letter-spacing: 1px;
 }
 .bottombar{
   display:flex;

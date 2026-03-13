@@ -10,6 +10,7 @@ const el = {
   startBtn: document.getElementById('start-btn'),
   bloomLayer: document.getElementById('bloom-layer'),
   video: document.getElementById('video'),
+  flash: document.getElementById('flash'),
   countdown: document.getElementById('countdown'),
   shotPill: document.getElementById('shot-pill'),
   cancelBtn: document.getElementById('cancel-btn'),
@@ -28,6 +29,7 @@ const el = {
 
 const CONFIG = {
   bloomMs: 2000,
+  captureBufferMs: 2000,
   countdownSeconds: 10,
   shots: 4,
   // 16:9 landscape capture target
@@ -62,6 +64,20 @@ function setScreen(active) {
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+async function flashOnce() {
+  if (!el.flash) return;
+  el.flash.classList.add('is-on');
+  await sleep(70);
+  el.flash.classList.remove('is-on');
+}
+
+async function showReadyBuffer() {
+  el.countdown.classList.add('is-ready');
+  el.countdown.textContent = 'Get ready...';
+  await sleep(CONFIG.captureBufferMs);
+  el.countdown.classList.remove('is-ready');
 }
 
 async function tryLockOrientationLandscape() {
@@ -226,7 +242,12 @@ async function captureFlow() {
     // Capture on 0
     const dataUrl = captureShotDataUrl();
     shots.push(dataUrl);
-    await sleep(220); // tiny beat between shots
+
+    await flashOnce();
+
+    if (i < CONFIG.shots - 1) {
+      await showReadyBuffer();
+    }
   }
 
   stopCamera();
