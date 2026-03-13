@@ -373,9 +373,16 @@ async function buildPrintableDataUrlFromStrip(stripCanvas) {
   const stripW = px(CONFIG.stripInches.w);
   const stripH = px(CONFIG.stripInches.h);
 
-  // Two identical strips side-by-side: [2×6][2×6] fills 4×6 exactly
-  ctx.drawImage(stripCanvas, 0, 0, stripW, stripH);
-  ctx.drawImage(stripCanvas, stripW, 0, stripW, stripH);
+  // Draw two identical strips side-by-side at 50% scale, centered on the 4×6 sheet.
+  const scaledW = stripW / 2;
+  const scaledH = stripH / 2;
+
+  const totalStripsW = scaledW * 2;
+  const offsetX = Math.round((outW - totalStripsW) / 2);
+  const offsetY = Math.round((outH - scaledH) / 2);
+
+  ctx.drawImage(stripCanvas, offsetX, offsetY, scaledW, scaledH);
+  ctx.drawImage(stripCanvas, offsetX + scaledW, offsetY, scaledW, scaledH);
 
   return canvas.toDataURL('image/png');
 }
