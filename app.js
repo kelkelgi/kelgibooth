@@ -427,6 +427,15 @@ function shotFilename(index) {
   return `photobooth_shot${index}_${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.jpg`;
 }
 
+function dataUrlToBlob(dataUrl) {
+  const [header, base64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)?.[1] || 'image/png';
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
 function downloadDataUrl(dataUrl, filename) {
   const a = document.createElement('a');
   a.href = dataUrl;
@@ -437,16 +446,37 @@ function downloadDataUrl(dataUrl, filename) {
 }
 
 async function saveAllToDevice() {
-  // Best-effort: trigger downloads so the user can save into Photos.
   if (!shots.length && !compositeDataUrl) return;
 
-  // Save individual shots first.
+  const files = [];
+
   shots.forEach((dataUrl, idx) => {
     if (!dataUrl) return;
-    downloadDataUrl(dataUrl, shotFilename(idx + 1));
+    const blob = dataUrlToBlob(dataUrl);
+    files.push(new File([blob], shotFilename(idx + 1), { type: 'image/jpeg' }));
   });
 
-  // Then save the final composite strip.
+  if (compositeDataUrl) {
+    const blob = dataUrlToBlob(compositeDataUrl);
+    files.push(new File([blob], timestampFilename(), { type: 'image/png' }));
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ files });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  // Fallback: trigger downloads (saves to Downloads, accessible in Files)
+  for (let i = 0; i < shots.length; i += 1) {
+    if (shots[i]) {
+      downloadDataUrl(shots[i], shotFilename(i + 1));
+      await sleep(300);
+    }
+  }
   if (compositeDataUrl) {
     downloadDataUrl(compositeDataUrl, timestampFilename());
   }
