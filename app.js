@@ -17,14 +17,10 @@ const el = {
   captureCanvas: document.getElementById('capture-canvas'),
   stripImg: document.getElementById('strip-img'),
   printImg: document.getElementById('print-img'),
-  emailBtn: document.getElementById('email-btn'),
   printBtn: document.getElementById('print-btn'),
   saveBtn: document.getElementById('save-btn'),
   restartBtn: document.getElementById('restart-btn'),
   uploadStatus: document.getElementById('upload-status'),
-  emailDialog: document.getElementById('email-dialog'),
-  emailForm: document.getElementById('email-form'),
-  emailInput: document.getElementById('email-input'),
 };
 
 const CONFIG = {
@@ -42,9 +38,6 @@ const CONFIG = {
   stripInches: { w: 2, h: 6 },
   sheetInches: { w: 4, h: 6 },
   photoInches: { w: 1.15, h: 1.25 },
-  // Backend hooks (optional). Provide these endpoints to enable:
-  // - Email send: POST image + email
-  emailEndpoint: '/api/email', // expects { email, filename, dataUrl }
 };
 
 let mediaStream = null;
@@ -319,7 +312,13 @@ async function buildStripCanvas() {
   const startY = header;
 
   for (let i = 0; i < 4; i += 1) {
-    const y = startY + i * (photoH + gap);
+    let y = startY + i * (photoH + gap);
+    // Nudge the third captured image (index 2) down by 14 logical pixels,
+    // scaled into strip space while keeping spacing between photos consistent
+    // by also shifting all rows at or below that index.
+    if (i >= 2) {
+      y += 14 * scale;
+    }
     const img = await loadImage(shots[i]);
 
     ctx.save();
@@ -452,16 +451,6 @@ async function saveAllToDevice() {
   }
 }
 
-async function sendEmail(email, dataUrl) {
-  const filename = timestampFilename();
-  const res = await fetch(CONFIG.emailEndpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, filename, dataUrl }),
-  });
-  if (!res.ok) throw new Error(`Email failed (${res.status})`);
-}
-
 function resetApp() {
   cancelled = true;
   stopCamera();
@@ -508,37 +497,6 @@ el.printBtn.addEventListener('click', () => {
 
 el.saveBtn.addEventListener('click', () => {
   void saveAllToDevice();
-});
-
-el.emailBtn.addEventListener('click', () => {
-  if (!el.emailDialog.open) {
-    el.emailInput.value = '';
-    el.emailDialog.showModal();
-    el.emailInput.focus();
-  }
-});
-
-el.emailForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const action = /** @type {HTMLButtonElement|null} */ (document.activeElement)?.value || 'send';
-  if (action === 'cancel') {
-    el.emailDialog.close();
-    return;
-  }
-  if (!compositeDataUrl) return;
-
-  const email = el.emailInput.value.trim();
-  if (!email) return;
-
-  try {
-    el.uploadStatus.textContent = 'Sending email…';
-    await sendEmail(email, compositeDataUrl);
-    el.uploadStatus.textContent = 'Email sent.';
-    el.emailDialog.close();
-  } catch {
-    el.uploadStatus.textContent = 'Email not configured (backend needed).';
-    el.emailDialog.close();
-  }
 });
 
 // iOS Safari: if page is backgrounded, release wake lock

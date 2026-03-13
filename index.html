@@ -47,7 +47,6 @@
           </div>
 
           <div class="actions">
-            <button id="email-btn" class="btn btn--primary" type="button">Email</button>
             <button id="print-btn" class="btn btn--primary" type="button">Print</button>
             <button id="save-btn" class="btn btn--primary" type="button">Save to Camera Roll</button>
           </div>
@@ -64,33 +63,6 @@
         </div>
       </section>
 
-      <!-- Email modal -->
-      <dialog id="email-dialog" class="dialog">
-        <form method="dialog" class="dialog-card" id="email-form">
-          <div class="dialog-title">Send your photo</div>
-          <label class="field">
-            <span class="field-label">Email</span>
-            <input
-              id="email-input"
-              class="field-input"
-              type="email"
-              inputmode="email"
-              autocomplete="email"
-              placeholder="name@example.com"
-              required
-            />
-          </label>
-          <div class="dialog-actions">
-            <button class="btn btn--ghost" value="cancel" type="submit">Cancel</button>
-            <button id="email-send-btn" class="btn btn--primary" value="send" type="submit">
-              Send
-            </button>
-          </div>
-          <div class="dialog-note">
-            Email sending requires a backend endpoint (see `app.js`).
-          </div>
-        </form>
-      </dialog>
     </main>
 
     <script src="./app.js" defer></script>

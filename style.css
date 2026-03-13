@@ -227,12 +227,12 @@ body{
 }
 .actions{
   display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
 }
 .actions .btn{
   width:100%;
-  font-size: 40px;
+  font-size: 34px;
   padding: 24px 20px;
   min-height: 110px;
 }
