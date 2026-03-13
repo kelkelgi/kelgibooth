@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Photobooth</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main id="app" class="app" aria-live="polite">
+      <!-- Start screen -->
+      <section id="screen-start" class="screen screen--active">
+        <div class="start-bg" role="img" aria-label="Start screen background"></div>
+        <div class="start-overlay">
+          <button id="start-btn" class="btn btn--start" type="button">
+            Start
+          </button>
+          <div id="bloom-layer" class="bloom-layer" aria-hidden="true"></div>
+          <div id="start-hint" class="hint" aria-hidden="true">
+            Tap Start to begin
+          </div>
+        </div>
+      </section>
+
+      <!-- Camera / countdown -->
+      <section id="screen-camera" class="screen">
+        <video id="video" class="video" playsinline muted autoplay></video>
+        <div class="camera-overlay">
+          <div class="topbar">
+            <div class="pill" id="shot-pill">Photo 1 of 4</div>
+          </div>
+          <div class="countdown" id="countdown">10</div>
+          <div class="bottombar">
+            <button id="cancel-btn" class="btn btn--ghost" type="button">Cancel</button>
+          </div>
+        </div>
+        <canvas id="capture-canvas" class="sr-only" width="1920" height="1080" aria-hidden="true"></canvas>
+      </section>
+
+      <!-- Final composite -->
+      <section id="screen-final" class="screen">
+        <div class="final-wrap">
+          <div class="strip-wrap">
+            <img id="strip-img" class="strip-img" alt="Your photobooth strip" />
+          </div>
+
+          <div class="actions">
+            <button id="email-btn" class="btn btn--primary" type="button">Email</button>
+            <button id="print-btn" class="btn btn--primary" type="button">Print</button>
+            <button id="save-btn" class="btn btn--primary" type="button">Save to Camera Roll</button>
+          </div>
+
+          <div class="subactions">
+            <button id="restart-btn" class="btn btn--ghost" type="button">Start Over</button>
+            <div id="upload-status" class="upload-status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Print-only -->
+        <div class="print-only">
+          <img id="print-img" alt="Photobooth strip for printing" />
+        </div>
+      </section>
+
+      <!-- Email modal -->
+      <dialog id="email-dialog" class="dialog">
+        <form method="dialog" class="dialog-card" id="email-form">
+          <div class="dialog-title">Send your photo</div>
+          <label class="field">
+            <span class="field-label">Email</span>
+            <input
+              id="email-input"
+              class="field-input"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              placeholder="name@example.com"
+              required
+            />
+          </label>
+          <div class="dialog-actions">
+            <button class="btn btn--ghost" value="cancel" type="submit">Cancel</button>
+            <button id="email-send-btn" class="btn btn--primary" value="send" type="submit">
+              Send
+            </button>
+          </div>
+          <div class="dialog-note">
+            Email sending requires a backend endpoint (see `app.js`).
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
