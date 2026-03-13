@@ -41,10 +41,8 @@ const CONFIG = {
   sheetInches: { w: 4, h: 6 },
   photoInches: { w: 1.15, h: 1.25 },
   // Backend hooks (optional). Provide these endpoints to enable:
-  // - Auto Google Drive upload: POST image
   // - Email send: POST image + email
-  uploadEndpoint: '/upload', // expects { filename, dataUrl } or multipart
-  emailEndpoint: '/email', // expects { email, filename, dataUrl }
+  emailEndpoint: '/api/email', // expects { email, filename, dataUrl }
 };
 
 let mediaStream = null;
@@ -364,9 +362,6 @@ async function buildCompositeAndShow() {
   // Display the 2×6 strip on screen, but print the 4×6 sheet.
   el.stripImg.src = compositeDataUrl;
   el.printImg.src = printableDataUrl;
-
-  // Auto-upload (best-effort)
-  void autoUploadToDrive(compositeDataUrl);
 }
 
 function timestampFilename() {
@@ -379,24 +374,6 @@ function timestampFilename() {
   const mi = pad2(d.getMinutes());
   const ss = pad2(d.getSeconds());
   return `photobooth_${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.png`;
-}
-
-async function autoUploadToDrive(dataUrl) {
-  el.uploadStatus.textContent = 'Uploading to Google Drive…';
-  const filename = timestampFilename();
-
-  try {
-    const res = await fetch(CONFIG.uploadEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, dataUrl }),
-    });
-    if (!res.ok) throw new Error(`Upload failed (${res.status})`);
-    el.uploadStatus.textContent = 'Uploaded to Google Drive.';
-  } catch {
-    // Keep UX gentle; still “works locally” without backend.
-    el.uploadStatus.textContent = 'Drive upload not configured (backend needed).';
-  }
 }
 
 function downloadDataUrl(dataUrl, filename) {
