@@ -355,28 +355,26 @@ async function buildStripDataUrl() {
 }
 
 async function buildPrintableDataUrlFromStrip(stripCanvas) {
-  const outW = px(CONFIG.sheetInches.w);
-  const outH = px(CONFIG.sheetInches.h);
+  // 4×6 at 300 DPI: 1200×1800
+  const printW = 4 * CONFIG.dpi;
+  const printH = 6 * CONFIG.dpi;
+
+  // 2×6 strip at 300 DPI: 600×1800
+  const stripW = 2 * CONFIG.dpi;
+  const stripH = 6 * CONFIG.dpi;
 
   const canvas = document.createElement('canvas');
-  canvas.width = outW;
-  canvas.height = outH;
+  canvas.width = printW;
+  canvas.height = printH;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas unavailable');
 
-  // White page background
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, outW, outH);
+  ctx.fillRect(0, 0, printW, printH);
 
-  const stripW = px(CONFIG.stripInches.w);
-  const stripH = px(CONFIG.stripInches.h);
-
-  // Draw two identical strips side-by-side at 50% scale, top-left of 4×6 sheet.
-  const scaledW = stripW / 2;
-  const scaledH = stripH / 2;
-
-  ctx.drawImage(stripCanvas, 0, 0, scaledW, scaledH);
-  ctx.drawImage(stripCanvas, scaledW, 0, scaledW, scaledH);
+  // Two identical 2×6 strips side-by-side: [strip][strip]
+  ctx.drawImage(stripCanvas, 0, 0, stripW, stripH);
+  ctx.drawImage(stripCanvas, stripW, 0, stripW, stripH);
 
   return canvas.toDataURL('image/png');
 }

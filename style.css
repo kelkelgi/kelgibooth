@@ -298,13 +298,13 @@ body{
   opacity: .75;
 }
 
-/* Print - 4×6 photo at top-left of 8.5×11 letter page */
-.print-page {
+/* Print - 4×6 with two identical 2×6 strips */
+.print-layout {
   display: none;
 }
 
 @page {
-  size: 8.5in 11in;
+  size: 4in 6in;
   margin: 0;
 }
 
@@ -313,28 +313,21 @@ body{
     visibility: hidden;
   }
 
-  .print-page,
-  .print-page * {
+  .print-layout,
+  .print-layout * {
     visibility: visible;
   }
 
-  .print-page {
+  .print-layout {
     display: block !important;
     position: fixed;
     top: 0;
     left: 0;
-    width: 8.5in;
-    height: 11in;
   }
 
-  #print-img {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .print-layout img {
     width: 4in;
     height: 6in;
-    object-fit: contain;
-    object-position: top left;
   }
 }
 
