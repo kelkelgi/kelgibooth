@@ -314,7 +314,7 @@ async function buildStripCanvas() {
 
   // Frame overlay (your provided frame fits this vertical strip concept well)
   try {
-    const frame = await loadImage('./assets/frame.png');
+    const frame = await loadImage('./assets/real frame.png');
     drawFrameCover(ctx, frame, outW, outH);
   } catch {
     // If frame missing, keep composite clean.
