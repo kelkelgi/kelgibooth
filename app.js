@@ -313,11 +313,11 @@ async function buildStripCanvas() {
 
   for (let i = 0; i < 4; i += 1) {
     let y = startY + i * (photoH + gap);
-    // Nudge the third captured image (index 2) down by 14 logical pixels,
-    // scaled into strip space while keeping spacing between photos consistent
-    // by also shifting all rows at or below that index.
+    // Nudge the third captured image (index 2) down by 6 logical pixels
+    // (after previous adjustments), scaled into strip space. Shift all
+    // rows at or below that index so spacing between photos stays even.
     if (i >= 2) {
-      y += 14 * scale;
+      y += 6 * scale;
     }
     const img = await loadImage(shots[i]);
 
