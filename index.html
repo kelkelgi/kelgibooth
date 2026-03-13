@@ -57,13 +57,13 @@
           </div>
         </div>
 
-        <!-- Print-only -->
-        <div class="print-only">
-          <img id="print-img" alt="Photobooth strip for printing" />
-        </div>
       </section>
-
     </main>
+
+    <!-- Print layout: 4×6 at top-left of 8.5×11 page (sibling of main for print visibility) -->
+    <div class="print-page" aria-hidden="true">
+      <img id="print-img" alt="Photobooth strip for printing" />
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
     <script src="./app.js" defer></script>

@@ -298,27 +298,36 @@ body{
   opacity: .75;
 }
 
-/* Print - image at top-left (0,0) on letter page only */
-.print-only{ display:none; }
-@page{
-  size: letter;
+/* Print - 4×6 photo at top-left of 8.5×11 letter page */
+.print-page {
+  display: none;
+}
+
+@page {
+  size: 8.5in 11in;
   margin: 0;
 }
-@media print{
-  body{ background:#fff; }
-  .screen{ display:none !important; }
-  #screen-final.screen--active{ display:block !important; }
-  .final-wrap, .actions, .subactions, .strip-wrap{ display:none !important; }
-  .print-only{
-    display:block;
-    position:fixed;
-    top:0;
-    left:0;
-    width: 4in;
-    height: 6in;
-    overflow: hidden;
+
+@media print {
+  body * {
+    visibility: hidden;
   }
-  .print-only img{
+
+  .print-page,
+  .print-page * {
+    visibility: visible;
+  }
+
+  .print-page {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8.5in;
+    height: 11in;
+  }
+
+  #print-img {
     position: absolute;
     top: 0;
     left: 0;
