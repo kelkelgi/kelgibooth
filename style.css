@@ -102,8 +102,11 @@ body{
   letter-spacing: 2px;
 }
 .btn--primary{
-  background: rgba(123,230,162,.92);
+  background: #F2CBF7;
   border: 4px solid rgba(27,27,27,.10);
+}
+.btn--primary:active{
+  background: #e3b5ea;
 }
 .btn--ghost{
   background: rgba(251, 244, 220, .76);

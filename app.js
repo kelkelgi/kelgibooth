@@ -415,6 +415,18 @@ function timestampFilename() {
   return `photobooth_${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.png`;
 }
 
+function shotFilename(index) {
+  const d = new Date();
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const mm = pad2(d.getMonth() + 1);
+  const dd = pad2(d.getDate());
+  const hh = pad2(d.getHours());
+  const mi = pad2(d.getMinutes());
+  const ss = pad2(d.getSeconds());
+  return `photobooth_shot${index}_${yyyy}-${mm}-${dd}_${hh}-${mi}-${ss}.jpg`;
+}
+
 function downloadDataUrl(dataUrl, filename) {
   const a = document.createElement('a');
   a.href = dataUrl;
@@ -422,6 +434,22 @@ function downloadDataUrl(dataUrl, filename) {
   document.body.appendChild(a);
   a.click();
   a.remove();
+}
+
+async function saveAllToDevice() {
+  // Best-effort: trigger downloads so the user can save into Photos.
+  if (!shots.length && !compositeDataUrl) return;
+
+  // Save individual shots first.
+  shots.forEach((dataUrl, idx) => {
+    if (!dataUrl) return;
+    downloadDataUrl(dataUrl, shotFilename(idx + 1));
+  });
+
+  // Then save the final composite strip.
+  if (compositeDataUrl) {
+    downloadDataUrl(compositeDataUrl, timestampFilename());
+  }
 }
 
 async function sendEmail(email, dataUrl) {
@@ -479,8 +507,7 @@ el.printBtn.addEventListener('click', () => {
 });
 
 el.saveBtn.addEventListener('click', () => {
-  if (!compositeDataUrl) return;
-  downloadDataUrl(compositeDataUrl, timestampFilename());
+  void saveAllToDevice();
 });
 
 el.emailBtn.addEventListener('click', () => {
