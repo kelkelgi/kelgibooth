@@ -312,10 +312,9 @@ async function buildStripCanvas() {
   const startY = header;
 
   for (let i = 0; i < 4; i += 1) {
+    if (!shots[i]) continue;
     let y = startY + i * (photoH + gap);
     // Nudge the third captured image (index 2) down by 6 logical pixels
-    // (after previous adjustments), scaled into strip space. Shift all
-    // rows at or below that index so spacing between photos stays even.
     if (i >= 2) {
       y += 6 * scale;
     }
@@ -324,7 +323,6 @@ async function buildStripCanvas() {
     ctx.save();
     roundRect(ctx, x, y, photoW, photoH, radius);
     ctx.clip();
-    // Fill the photo slot (cover-crop the landscape photo into the portrait-ish slot)
     drawCover(ctx, img, x, y, photoW, photoH);
     ctx.restore();
   }
@@ -373,16 +371,12 @@ async function buildPrintableDataUrlFromStrip(stripCanvas) {
   const stripW = px(CONFIG.stripInches.w);
   const stripH = px(CONFIG.stripInches.h);
 
-  // Draw two identical strips side-by-side at 50% scale, centered on the 4×6 sheet.
+  // Draw two identical strips side-by-side at 50% scale, top-left of 4×6 sheet.
   const scaledW = stripW / 2;
   const scaledH = stripH / 2;
 
-  const totalStripsW = scaledW * 2;
-  const offsetX = Math.round((outW - totalStripsW) / 2);
-  const offsetY = Math.round((outH - scaledH) / 2);
-
-  ctx.drawImage(stripCanvas, offsetX, offsetY, scaledW, scaledH);
-  ctx.drawImage(stripCanvas, offsetX + scaledW, offsetY, scaledW, scaledH);
+  ctx.drawImage(stripCanvas, 0, 0, scaledW, scaledH);
+  ctx.drawImage(stripCanvas, scaledW, 0, scaledW, scaledH);
 
   return canvas.toDataURL('image/png');
 }

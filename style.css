@@ -308,13 +308,19 @@ body{
   .print-only{
     display:block;
     position:fixed;
-    inset:0;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
     display:grid;
-    place-items:center;
+    align-items:start;
+    justify-content:start;
   }
   .print-only img{
     max-width: 100%;
     max-height: 100%;
+    object-fit: contain;
+    object-position: top left;
   }
 }
 
